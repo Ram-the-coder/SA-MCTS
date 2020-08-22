@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 EMPTY = 0
 X_PLAYER = 1
 O_PLAYER = 2
@@ -87,5 +85,8 @@ class Board(object):
 
             if i % 3 == 2:
                 print('')
+
+    def isGameOver(self, state):
+        return self.winner(state) != ONGOING
 
 

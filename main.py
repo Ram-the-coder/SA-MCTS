@@ -1,11 +1,9 @@
-from mcts import MonteCarlo
-from game_state import Board
+from nmc import NMCParameterTuning, MultiArmedBandit
 
-ticTacToe = Board()
-mctsInstance = MonteCarlo(ticTacToe, ticTacToe.start())
+nmc = NMCParameterTuning(1)
+nmc.addArmsForParameters(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
 while True:
-    cont = input('Play?')
-    if cont != 'y':
+    ch = input('Play? ')
+    if ch != 'y':
         break
-    mctsInstance.play()
-
+    nmc.play()

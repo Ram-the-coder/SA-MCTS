@@ -19,76 +19,56 @@ class Node:
 
 
 class MonteCarlo:
-    def __init__(self, board, startState, **kwargs):
+    def __init__(self, board, **kwargs):
         self.board = board
-        self.root = Node(startState, 0)
         self.C = kwargs.get('C', 0.7)
+        self.timePerMove = kwargs.get('timePerMove', 1)
     
-    def play(self):        
-        cur = self.root
-        getInput = True;
+    def play(self, cur):        
+        totalReward = 0
+        totalPlays = 0
+        if self.board.isGameOver(cur.state):
+            return
 
-        # THE GAME
-        while self.board.winner(cur.state) == 0:
-            self.board.display(cur.state)
-            getInput = not getInput
+        start = datetime.datetime.utcnow()
+        while datetime.datetime.utcnow() - start < datetime.timedelta(seconds=self.timePerMove):
+            # Selection
+            path = self.select(cur)
 
-            # Player's Turn
-            if getInput:
-                if len(cur.children) == 0:
-                    expand(cur)
-                inputMove = int(input('Move:'))
-                nextNode = None
-                for child in cur.children:
-                    if child.move == inputMove:
-                        nextNode = child
-                        break
-                cur = nextNode
-                continue
+            # Expansion
+            leaf = path[0]
+            self.expand(leaf)
 
-            # AI's Turn
-            start = datetime.datetime.utcnow()
-            while datetime.datetime.utcnow() - start < datetime.timedelta(seconds=2):
-                # Selection
-                path = self.select(cur)
-
-                # Expansion
-                leaf = path[0]
-                self.expand(leaf)
-
-                # Simulation
-                player = X_PLAYER
-                opponent = O_PLAYER
-                reward = 0
-                if not leaf.isTerminal:
-                    reward, terminalDepth = self.simulate(leaf, player)
-                    # Backpropagation
-                    for node in path:
-                        node.plays += 1
-                        node.wins += reward
-            
-            # Print Stats
-            for x in sorted(((100 * child.wins/(child.plays+1), child.wins, child.plays, child.move) for child in cur.children), reverse = True):
-                print('{3} - {0}% - {1}/{2}'.format(*x))
-
-            # Get best move
-            bestChild = 0
-            bestScore = cur.children[0].wins/(cur.children[0].plays+1)
-            maxPlays = cur.children[0].plays
-
-            for i in range(1, len(cur.children)):
-                score = cur.children[i].wins/(cur.children[i].plays+1)
-                if score > bestScore:
-                    bestScore = score
-                    bestChild = i
-            
-            # Make best move
-            cur = cur.children[bestChild]
+            # Simulation
+            player = self.board.current_player(cur.state)
+            opponent = O_PLAYER if player == X_PLAYER else O_PLAYER
+            reward = 0
+            if not leaf.isTerminal:
+                reward, terminalDepth = self.simulate(leaf, player)
+                totalPlays += 1
+                totalReward += reward
+                # Backpropagation
+                for node in path:
+                    node.plays += 1
+                    node.wins += reward
         
+        # Print Stats
+        for x in sorted(((100 * child.wins/(child.plays+1), child.wins, child.plays, child.move) for child in cur.children), reverse = True):
+            print('{3} - {0}% - {1}/{2}'.format(*x))
 
-        self.board.display(cur.state)
-        print('Winner', self.board.winner(cur.state))
+        # Get best move
+        bestChild = 0
+        bestScore = cur.children[0].wins/(cur.children[0].plays+1)
+        maxPlays = cur.children[0].plays
 
+        for i in range(1, len(cur.children)):
+            score = cur.children[i].wins/(cur.children[i].plays+1)
+            if score > bestScore:
+                bestScore = score
+                bestChild = i
+        
+        # Return next state when best move is made
+        return (cur.children[bestChild], totalReward / totalPlays if totalPlays != 0 else 0)       
 
     # Selection Logic
     # Select the unexplored leaf node
