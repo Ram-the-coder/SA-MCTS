@@ -5,8 +5,9 @@ from copy import deepcopy
 
 
 class MultiArmedBandit:
-    # Uses optimistic initial values
+    # Uses optimistic initial values to encourage early exploration
     # Uses sample average method for update
+
     def __init__(self, **kwargs):
         self.arms = []
 
@@ -15,18 +16,17 @@ class MultiArmedBandit:
         return (deepcopy(self.arms[bestArmIndex]['armDetails']), bestArmIndex)
 
     # Expects a reward in the range [0, 1]
-    # The optimistic initial value is set to 2 assuming reward range of [0, 1]
-    def update(self, bestArmIndex, reward):
-        if bestArmIndex >= len(self.arms):
-            raise Exception('bestArmIndex out of bounds', bestArmIndex, len(self.arms))            
-        self.arms[bestArmIndex]['n'] += 1 
-        self.arms[bestArmIndex]['expectedReward'] += (reward - self.arms[bestArmIndex]['expectedReward']) / self.arms[bestArmIndex]['n']
+    def update(self, armIndex, reward):
+        if armIndex >= len(self.arms):
+            raise Exception('bestArmIndex out of bounds', {'armIndex': armIndex, 'num arms': len(self.arms)})            
+        self.arms[armIndex]['n'] += 1 
+        self.arms[armIndex]['expectedReward'] += (reward - self.arms[armIndex]['expectedReward']) / self.arms[armIndex]['n']
         
 
     def addArm(self, armDetails):
         self.arms.append({
             'armDetails': armDetails,
-            'expectedReward': 2,
+            'expectedReward': 2, # The optimistic initial value is set to 2 assuming reward range of [0, 1]
             'n': 1
         })
         
