@@ -63,9 +63,9 @@ class Board(object):
 
         # Check Diagonals
         if state[0] != EMPTY and state[0] == state[4] and state[0] == state[8]:
-            return state[i]
+            return state[0]
         if state[2] != EMPTY and state[2] == state[4] and state[2] == state[6]:
-            return state[i]
+            return state[2]
 
         # Check Tie vs Ongoing
         for i in range(0, 9):

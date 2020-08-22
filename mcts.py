@@ -125,3 +125,6 @@ class MonteCarlo:
             selectedChild = choice([Node(self.board.next_state(node.state, move), node.depth + 1, move) for move in self.board.legal_plays(node.state)])
 
         return self.simulate(selectedChild, player)
+
+    def setParams(self, params):
+        self.C = params[0]

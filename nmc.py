@@ -54,6 +54,7 @@ class NMCParameterTuning:
 
             if isAiTurn:
                 parameters = self.chooseParameterValues()
+                self.mcts.setParams(parameters)
                 curStateNode, reward = self.mcts.play(curStateNode)
                 self.updateStatistics(parameters, reward)
             else:
