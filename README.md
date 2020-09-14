@@ -14,6 +14,18 @@ This is an implemention of **C. F. Sironi, J. Liu and M. H. M. Winands, "Self-Ad
 Tree Search in General Game Playing," in IEEE Transactions on Games,
 vol. 12, no. 2, pp. 132-144, June 2020, doi: 10.1109/TG.2018.2884768**
 
+# Guidelines to contribute
+
+1. Fork this repo
+2. Clone your forked repo using the command `git clone <url to your fork>`
+3. Run ```pip install -r requirements.txt``` to install dependencies
+4. Make changes
+5. To commit your changes run the following commands:
+	* `git add .` 
+	* `git commit -m "write a short message here denoting the change you are making"` 
+	* `git push origin master` 
+6. Now make a pull request
+
 # Understanding the code
 ##### Entry point: 
 *main.py* / *benchmark.py*
