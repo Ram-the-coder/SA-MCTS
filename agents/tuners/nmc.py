@@ -1,11 +1,11 @@
-from game_state import Board
-import mcts
+from agents.tuners.tunerMeta import TunerMeta
 from random import random
 from copy import deepcopy
 
 
 class MultiArmedBandit:
     # Uses optimistic initial values to encourage early exploration
+    # TODO Use UCB
     # Uses sample average method for update
 
     def __init__(self, **kwargs):
@@ -34,43 +34,23 @@ class MultiArmedBandit:
 EXPLORATION_PHASE = 'exploration'
 EXPLOITATION_PHASE = 'exploitation'
 
-class NMCParameterTuning:
-    def __init__(self, numParams, **kwargs):
-        self.board = Board()
-        self.mcts = mcts.MonteCarlo(self.board)
+class NMCParameterTuning(TunerMeta):
+    def __init__(self, parameters, **kwargs):
+        numParams = len(parameters)
         self.parametersMAB = [MultiArmedBandit() for i in range(0, numParams)]
         self.chosenParameterValueIndices = [None]*numParams
         self.comboMAB = MultiArmedBandit()
         self.chosenComboIndex = None
         self.phaseSelectionPolicy = kwargs.get('phaseSelectionPolicy', 0.1)
-
-    def play(self):
-        isAiTurn = False
-        curStateNode = mcts.Node(self.board.start(), 0)
-
-        while not self.board.isGameOver(curStateNode.state):
-            self.board.display(curStateNode.state)
-            isAiTurn = not isAiTurn
-
-            if isAiTurn:
-                parameters = self.chooseParameterValues()
-                self.mcts.setParams(parameters)
-                curStateNode, reward = self.mcts.play(curStateNode)
-                self.updateStatistics(parameters, reward)
-            else:
-                if len(curStateNode.children) == 0:
-                    self.mcts.expand(curStateNode)
-                inputMove = int(input('Your move: '))
-                nextNode = None
-                for child in curStateNode.children:
-                    if child.move == inputMove:
-                        nextNode = child
-                        break
-                curStateNode = nextNode
         
-        print('Parameters at the end of play:', self.comboMAB.choose())
-
-    def chooseParameterValues(self):
+        for i in range(numParams):
+            if not parameters[i]['isDiscreteDomain']:
+                raise Exception(parameters[i], 'this parameter passes to NMC does not have a discrete domain')
+            for val in parameters[i]['domain']:
+                self.parametersMAB[i].addArm({'name': parameters[i]['name'], 'value': val})
+            
+            
+    def getParams(self):
         phase = self.choosePhase() if len(self.comboMAB.arms) > 0 else EXPLORATION_PHASE
         parameters = [None]*len(self.parametersMAB) # Initialize
         if phase == EXPLORATION_PHASE:
@@ -89,11 +69,11 @@ class NMCParameterTuning:
         val = random()
         return EXPLORATION_PHASE if val <= self.phaseSelectionPolicy else EXPLOITATION_PHASE
 
-    def addArmsForParameters(self, i, *args):
-        for val in args:
-            self.parametersMAB[i].addArm(val)
+    # def addArmsForParameters(self, i, *args):
+    #     for val in args:
+    #         self.parametersMAB[i].addArm(val)
 
-    def updateStatistics(self, parameters, reward):
+    def updateStatistics(self, reward):
         self.comboMAB.update(self.chosenComboIndex, reward)
         self.chosenComboIndex = None
         for i in range(0, len(self.chosenParameterValueIndices)):

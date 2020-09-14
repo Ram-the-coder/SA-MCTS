@@ -1,15 +1,12 @@
+from games.boardMeta import BoardMeta, BoardException
+
 EMPTY = 0
 X_PLAYER = 1
 O_PLAYER = 2
 TIE = -1
 ONGOING = 0
 
-class BoardException(Exception): 
-    def __init__(self, error_message, error_object):
-        self.msg = error_message
-        self.details = error_object
-
-class Board(object):
+class Board(BoardMeta):
 
     def start(self):
         # Returns a representation of the starting state of the game.
@@ -85,8 +82,7 @@ class Board(object):
 
             if i % 3 == 2:
                 print('')
+        print()
 
     def isGameOver(self, state):
         return self.winner(state) != ONGOING
-
-
