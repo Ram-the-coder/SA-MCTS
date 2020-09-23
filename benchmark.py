@@ -1,7 +1,6 @@
 from game import Game
 from agents.agentsList import benchmarkList as agents
 from games.gamesList import benchmarkList as games
-import progressbar
 import os
 
 NUMBER_OF_GAMES_PER_PAIR_OF_AGENTS = 5
@@ -18,23 +17,23 @@ parameters = [{
 os.system('cls')
 
 for game in games:
-    print('Game:', game)
+    print('\nGame:', game)
     for agent1 in agents:
         for agent2 in agents:
             if agent1 == agent2:
                 continue
             wins1 = 0
             wins2 = 0
-            bar = progressbar.ProgressBar(maxval=5, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+            draws = 0
             print('Running:', agent1, 'vs', agent2)
-            bar.start()
             for i in range(NUMBER_OF_GAMES_PER_PAIR_OF_AGENTS):
-                gameInstance = Game(agent1, parameters, agent2, parameters, game)
+                displayPrefix = 'Game {0}/{1}'.format(i+1, NUMBER_OF_GAMES_PER_PAIR_OF_AGENTS)
+                gameInstance = Game(agent1, parameters, agent2, parameters, game, displayPrefix)
                 winner = gameInstance.playGame(displayState=False)
                 if winner == 1:
                     wins1 += 1
-                else:
+                elif winner == -1:
                     wins2 += 1
-                bar.update(i+1)
-            bar.finish()
-            print('Result: {0}: {1}% {2}: {3}%'.format(agent1, wins1*20, agent2, wins2*20))
+                else:
+                    draws += 1
+            print('Result: {0}: {1}% {2}: {3}% Draws: {4}%'.format(agent1, wins1*20, agent2, wins2*20, draws*20))

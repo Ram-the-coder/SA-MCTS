@@ -1,6 +1,7 @@
 from game import Game
 from agents import agentsList
 from games import gamesList
+from games import games
 
 parameters = [{
     'name': 'C',
@@ -11,7 +12,10 @@ parameters = [{
     'default': 0.7
 }]
 
-tictactoeGame = Game(agentsList.nmc, parameters, agentsList.mcts, parameters, gamesList.ticTacToe)
-winner = tictactoeGame.playGame()
-print('winner: Agent', winner)
+# tictactoeGame = Game(agentsList.nmc, parameters, agentsList.mcts, parameters, gamesList.ticTacToe)
+# winner = tictactoeGame.playGame()
+# print('winner: Agent', winner)
 
+checkers = Game(agentsList.nmc, parameters, agentsList.mcts, parameters, gamesList.checkers)
+winner = checkers.playGame()
+print('winner: Agent', winner)

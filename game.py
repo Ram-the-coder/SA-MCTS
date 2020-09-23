@@ -2,10 +2,11 @@ from agents.Agent import Agent
 from games import games
 
 class Game:
-    def __init__(self, agent1, agent1parameters, agent2, agent2parameters, game):
+    def __init__(self, agent1, agent1parameters, agent2, agent2parameters, game, displayPrefix = None):
         self.board = games.getBoard(game)
         self.agent1 = Agent(agent1, agent1parameters, self.board)
         self.agent2 = Agent(agent2, agent2parameters, self.board)
+        self.displayPrefix = displayPrefix
 
 
     # Return 1 if agent1 won
@@ -14,11 +15,15 @@ class Game:
     def playGame(self, displayState = True):
         gameState = self.board.start()
         agent1Turn = True
+        turn = 0
 
         if displayState:
             self.board.display(gameState)
 
         while not self.board.isGameOver(gameState):
+            if self.displayPrefix:
+                print(self.displayPrefix + ' Turn {0}'.format(turn), end='\u001b[0K\r')
+            turn += 1
             if displayState:
                 print('{0}\'s turn'.format(self.agent1.agentType if agent1Turn else self.agent2.agentType))
             gameState = self.agent1.makeMove(gameState) if agent1Turn else self.agent2.makeMove(gameState)

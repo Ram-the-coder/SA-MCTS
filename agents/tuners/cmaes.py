@@ -1,7 +1,7 @@
 import cma
 import mcts
 from game_state import Board
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from copy import deepcopy
 
 # TODO: Disable all termination criteria regarding
