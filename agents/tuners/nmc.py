@@ -1,18 +1,22 @@
 from agents.tuners.tunerMeta import TunerMeta
 from random import random
 from copy import deepcopy
+from math import sqrt, log
 
 
 class MultiArmedBandit:
-    # Uses optimistic initial values to encourage early exploration
-    # TODO Use UCB
+    # Uses UCB for choosing
     # Uses sample average method for update
 
     def __init__(self, **kwargs):
         self.arms = []
+        self.c = 1 # Exploration constant
+        self.totalSelections = 1
 
     def choose(self):
-        bestExpectedReward, bestArmIndex = max([(self.arms[i]['expectedReward'], i) for i in range(0, len(self.arms))])
+        # bestExpectedReward, bestArmIndex = max([(self.arms[i]['expectedReward'], i) for i in range(len(self.arms))])
+        bestScore, bestArmIndex = max([(self.calcUCB(self.arms[i]), i) for i in range(len(self.arms))])
+        self.totalSelections += 1
         return (deepcopy(self.arms[bestArmIndex]['armDetails']), bestArmIndex)
 
     # Expects a reward in the range [0, 1]
@@ -26,9 +30,12 @@ class MultiArmedBandit:
     def addArm(self, armDetails):
         self.arms.append({
             'armDetails': armDetails,
-            'expectedReward': 2, # The optimistic initial value is set to 2 assuming reward range of [0, 1]
+            'expectedReward': 0,
             'n': 1
         })
+
+    def calcUCB(self, arm):
+        return arm['expectedReward'] + self.c * sqrt(log(self.totalSelections) / arm['n'])
         
 
 EXPLORATION_PHASE = 'exploration'
@@ -41,7 +48,7 @@ class NMCParameterTuning(TunerMeta):
         self.chosenParameterValueIndices = [None]*numParams
         self.comboMAB = MultiArmedBandit()
         self.chosenComboIndex = None
-        self.phaseSelectionPolicy = kwargs.get('phaseSelectionPolicy', 0.1)
+        self.phaseSelectionPolicy = kwargs.get('phaseSelectionPolicy', 0.75)
         
         for i in range(numParams):
             if not parameters[i]['isDiscreteDomain']:
