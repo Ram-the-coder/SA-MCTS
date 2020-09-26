@@ -1,17 +1,32 @@
 from game import Game
 from agents.agentsList import benchmarkList as agents
 from games.gamesList import benchmarkList as games
+from math import inf
 import os
 
 NUMBER_OF_GAMES = 5
 
 parameters = [{
-    'name': 'C',
+    'name': 'C', # MCTS Exploration Constant
     'isDiscreteDomain': True,
-    'lowerBound': None, # For continuous domain
-    'upperBound': None, # For continuous domain
+    'lowerBound': 0, # For continuous domain
+    'upperBound': 1, # For continuous domain
     'domain': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], # For discrete domain
-    'default': 0.7
+    'default': 0.2
+}, {
+    'name': 'T', # Min number visits before selection and expansion is performed on a node
+    'isDiscreteDomain': True,
+    'lowerBound': 0, # For continuous domain
+    'upperBound': 200, # For continuous domain
+    'domain': [0, 5, 10, 20, 30, 40, 50, 100, 200, inf], # For discrete domain
+    'default': 0
+}, {
+    'name': 'VO', # Used in mcts selection phase
+    'isDiscreteDomain': True,
+    'lowerBound': 0, # For continuous domain
+    'upperBound': 0.025, # For continuous domain
+    'domain': [0.001, 0.005, 0.01, 0.015, 0.02, 0.025], # For discrete domain
+    'default': 0.01
 }]
 
 os.system('cls')

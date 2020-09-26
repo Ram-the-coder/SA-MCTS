@@ -55,10 +55,10 @@ class MonteCarlo:
     # Select the unexplored leaf node
     # To make selection among a child's children, use UCT (Upper Confidence Tree) formula
     def select(self, node):
-        if len(node.children) == 0:
+        if len(node.children) == 0 or node.plays < self.params['T']:
             return [node]
         
-        log_total = log(sum((child.plays + 1) for child in node.children)) / log(2.71828)
+        log_total = log(max(sum(child.plays for child in node.children), 1))
 
         if len(node.children) < 1:
             raise Exception('length less than one')
@@ -70,7 +70,14 @@ class MonteCarlo:
             score = (child.wins / (child.plays + 1)) + (self.params['C'] * sqrt(log_total/(child.plays+1)))
             if score > bestScore:
                 bestScore = score
-                selectedChild = child
+
+        goodChildren = []
+        for child in node.children:
+            score = (child.wins / (child.plays + 1)) + (self.params['C'] * sqrt(log_total/(child.plays+1)))
+            if bestScore - self.params['VO'] <= score:
+                goodChildren.append(child)
+
+        selectedChild = choice(goodChildren)
 
         if selectedChild == None:
             raise Exception("selected child none", bestScore, node.state, log_total, [(child.wins, child.plays, (child.wins / (child.plays + 1)) + (self.params['C'] * sqrt(log_total/(child.plays+1)))) for child in node.children])
