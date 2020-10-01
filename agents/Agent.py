@@ -59,7 +59,7 @@ class Agent:
         if agentType == agentsList.nmc:
             return NMCParameterTuning(agentParameters)
         if agentType == agentsList.ea:
-            return 
+            return EAParameterTuning(agentParameters)
     
         return None
 
