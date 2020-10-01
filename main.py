@@ -31,7 +31,7 @@ parameters = [{
 # winner = tictactoeGame.playGame()
 # print('winner: Agent', winner)
 
-checkers = Game(agentsList.ea, parameters, agentsList.mcts, parameters, gamesList.ticTacToe)
+checkers = Game(agentsList.ea, parameters, agentsList.mcts, parameters, gamesList.checkers)
 winner = checkers.playGame()
 print('winner: Agent', winner)
 
