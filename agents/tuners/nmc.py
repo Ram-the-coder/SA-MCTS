@@ -61,11 +61,27 @@ class NMCParameterTuning(TunerMeta):
         phase = self.choosePhase() if len(self.comboMAB.arms) > 0 else EXPLORATION_PHASE
         parameters = [None]*len(self.parametersMAB) # Initialize
         if phase == EXPLORATION_PHASE:
+            # Generate a parameter combination
             for i in range(0, len(self.parametersMAB)):
                 parameters[i], self.chosenParameterValueIndices[i] = self.parametersMAB[i].choose()
             parameters = tuple(parameters)
-            self.comboMAB.addArm((deepcopy(parameters), deepcopy(self.chosenParameterValueIndices)))
-            self.chosenComboIndex = len(self.comboMAB.arms) - 1
+
+            # Check whether this parameter combination already exists
+            paramComboExists = False
+            for idx, paramCombo in enumerate(self.comboMAB.arms):
+                thisParamComboExists = True
+                for i in range(len(paramCombo)):
+                    if parameters[i]['value'] != paramCombo['armDetails'][0][i]['value']:
+                        thisParamComboExists = False
+                        break
+                if thisParamComboExists:
+                    paramComboExists = True
+                    self.chosenComboIndex = idx
+                    break
+
+            if not paramComboExists:
+                self.comboMAB.addArm((deepcopy(parameters), deepcopy(self.chosenParameterValueIndices)))
+                self.chosenComboIndex = len(self.comboMAB.arms) - 1
         
         elif phase == EXPLOITATION_PHASE:
             (parameters, self.chosenParameterValueIndices), self.chosenComboIndex = self.comboMAB.choose()
@@ -75,10 +91,6 @@ class NMCParameterTuning(TunerMeta):
     def choosePhase(self):
         val = random()
         return EXPLORATION_PHASE if val <= self.phaseSelectionPolicy else EXPLOITATION_PHASE
-
-    # def addArmsForParameters(self, i, *args):
-    #     for val in args:
-    #         self.parametersMAB[i].addArm(val)
 
     def updateStatistics(self, reward):
         self.comboMAB.update(self.chosenComboIndex, reward)
