@@ -6,4 +6,4 @@ ea = 'ea'
 cmaes = 'cma-es'
 # human = 'human'
 
-benchmarkList = [mcts, nmc, cmaes]
+benchmarkList = [mcts, nmc, ea, cmaes]

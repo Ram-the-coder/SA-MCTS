@@ -3,6 +3,7 @@ import agents.agentsList as agentsList
 from agents.tuners.nmc import NMCParameterTuning
 from agents.tuners.ea import EAParameterTuning
 from agents.tuners.cmaes import cmaEsParameterTuning
+from agents.tuners.ea import EAParameterTuning 
 import datetime
 
 TIME_PER_MOVE = 1
@@ -63,7 +64,6 @@ class Agent:
             return EAParameterTuning(agentParameters)
         if agentType == agentsList.cmaes:
             return cmaEsParameterTuning(agentParameters)
-    
         return None
 
         
