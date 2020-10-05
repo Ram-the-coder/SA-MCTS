@@ -1,6 +1,8 @@
 from agents.mcts import MonteCarlo
 import agents.agentsList as agentsList
 from agents.tuners.nmc import NMCParameterTuning
+from agents.tuners.ea import EAParameterTuning
+from agents.tuners.cmaes import cmaEsParameterTuning
 import datetime
 
 TIME_PER_MOVE = 1
@@ -57,6 +59,10 @@ class Agent:
     def getTunerInstance(self, agentType, agentParameters):
         if agentType == agentsList.nmc:
             return NMCParameterTuning(agentParameters)
+        if agentType == agentsList.ea:
+            return EAParameterTuning(agentParameters)
+        if agentType == agentsList.cmaes:
+            return cmaEsParameterTuning(agentParameters)
     
         return None
 

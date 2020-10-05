@@ -1,74 +1,16 @@
 import cma
-import mcts
-from game_state import Board
-# import matplotlib.pyplot as plt
 from copy import deepcopy
+from agents.tuners.tunerMeta import TunerMeta
+import random
 
-# TODO: Disable all termination criteria regarding
-# the fitness function, so that the optimization continues
-# even if the minimum tness is reached or if no signicant
-# change in tness is observed. The motivation behind this
-# choice is that the best parameter combination for MCTS
-# might change over time, thus we want to keep exploring
-# the search space. 
+class cmaEs:
+    def __init__(self,initParameterValues,initMean=[0.179]*5,initStdDev=0.3,fitnesPenalty=100):
+       
+        self.initParameterValues = deepcopy(initParameterValues)
+        self.fitnessPenalty=fitnesPenalty
+        self.es=cma.CMAEvolutionStrategy(initMean,initStdDev)
+        
 
-class CmaesParameterTuning:
-    def __init__(self, initParameterValues, initStdDev, fitnessPenalty, parameterRanges):
-        initParameterValues = deepcopy(initParameterValues)
-        parameterRanges = deepcopy(parameterRanges)
-        print(initParameterValues, initStdDev)
-        self.es = cma.CMAEvolutionStrategy(initParameterValues, initStdDev)
-        self.fitnessPenalty = fitnessPenalty
-        self.board = Board()
-        self.mcts = mcts.MonteCarlo(self.board)
-        self.parameterRanges = parameterRanges
-
-    def play(self):
-        isAiTurn = False
-        curStateNode = mcts.Node(self.board.start(), 0)
-
-        while not self.board.isGameOver(curStateNode.state):
-
-            self.board.display(curStateNode.state)
-            print()
-            isAiTurn = not isAiTurn
-
-            if isAiTurn:
-                if not self.es.stop():
-                    # Minima not found yet
-                    offsprings = self.es.ask()
-                    offspringFitness = []
-                    for parameterCombo in offsprings:
-                        offspringFitness.append(self.computeFitness(parameterCombo, curStateNode))
-                    self.es.tell(offsprings, offspringFitness)
-
-                    
-                    bestParams = self.es.result.xbest
-                    self.repairIndividual(bestParams)
-                    self.denormalizeIndividual(bestParams)
-                    self.mcts.setParams(tuple(bestParams))
-
-                curStateNode, reward = self.mcts.play(curStateNode)
-
-            else:
-                if len(curStateNode.children) == 0:
-                    self.mcts.expand(curStateNode)
-                inputMove = int(input('Your move: '))
-                nextNode = None
-                for child in curStateNode.children:
-                    if child.move == inputMove:
-                        nextNode = child
-                        break
-                curStateNode = nextNode
-
-    
-    def computeFitness(self, params, curStateNode):
-        params = deepcopy(params)
-        penalty = self.repairIndividual(params)
-        self.denormalizeIndividual(params)
-        self.mcts.setParams(tuple(params))
-        curStateNode, reward = self.mcts.play(curStateNode)
-        return (100 - reward + penalty)
 
     def repairIndividual(self, params):
         penalty = 0
@@ -83,8 +25,62 @@ class CmaesParameterTuning:
         penalty = self.fitnessPenalty * (penalty ** 0.5)
         return penalty
 
-    def denormalizeIndividual(self, params):
+    def denormalizeIndividual(self,individual, params):
         for i in range(0, len(params)):
-            lb = self.parameterRanges[i]['min']
-            ub = self.parameterRanges[i]['max']
-            params[i] = lb + params[i] * (ub - lb)
+            lb = params[i]['lowerBound']
+            ub = params[i]['upperBound']
+            individual[i] = lb + individual[i] * (ub - lb)
+        # print(individual)
+
+
+class cmaEsParameterTuning(TunerMeta):
+    def __init__(self, parameters, **kwargs):
+        self.parameters=parameters
+        # print(parameters)
+        self.fitness=[]
+        self.current_index=0
+        initmean=[random.random() for i in range(len(self.parameters))]
+        print("initmean",initmean)
+        self.cmaes=cmaEs(parameters,initmean)
+        self.penalty=100
+        self.es=self.cmaes.es
+        self.generatedPopulation=self.es.ask()
+        self.populationSize=len(self.generatedPopulation)
+        self.fitness=[0]*self.populationSize
+        # print(self.generatedPopulation)
+        
+        
+    def getParams(self):
+        # selectedIndividual=None
+        #### Current Generation
+        if self.current_index<self.populationSize:
+            selectedIndividual=self.generatedPopulation[self.current_index]
+            
+        else:
+            #### New Generation
+            self.es.tell(self.generatedPopulation,self.fitness) #update fitness values to the distribution
+            self.generatedPopulation=self.es.ask() #generate new population
+            self.current_index=0
+            selectedIndividual=self.generatedPopulation[self.current_index]
+            self.populationSize=len(self.generatedPopulation)
+            self.fitness=[0]*self.populationSize
+            # selectedIndividual=self.es.result.xbest
+
+
+        individual=[]
+        self.cmaes.repairIndividual(selectedIndividual)
+        self.cmaes.denormalizeIndividual(selectedIndividual,self.parameters)
+        for i, param in enumerate(self.parameters): 
+            individual.append(
+                {'name': param['name'], 'value':selectedIndividual[i]})
+        # print(individual)
+        return tuple(individual)
+        
+    def updateStatistics(self,reward):
+        self.fitness[self.current_index]=100-reward+self.cmaes.repairIndividual(self.generatedPopulation[self.current_index])
+        self.current_index+=1
+        return
+
+        
+
+
