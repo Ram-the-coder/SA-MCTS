@@ -3,7 +3,7 @@ nmc = 'nmc'
 # lsi = 'lsi'
 ea = 'ea'
 # ntbea = 'ntbea'
-# cmaes = 'cma-es'
+cmaes = 'cma-es'
 # human = 'human'
 
-benchmarkList = [mcts, nmc , ea]
+benchmarkList = [mcts, nmc, ea, cmaes]
