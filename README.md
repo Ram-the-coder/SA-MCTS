@@ -15,6 +15,11 @@ This is an implemention of **C. F. Sironi, J. Liu and M. H. M. Winands, "Self-Ad
 Tree Search in General Game Playing," in IEEE Transactions on Games,
 vol. 12, no. 2, pp. 132-144, June 2020, doi: 10.1109/TG.2018.2884768**
 
+# How to run this?
+
+1. Clone / download this code.
+2. You can run `benchmark.py` to perform benchmarking. You can either choose to benchmark a particular allocation strategy or you can choose to benchmark all allocation strategies against an offline tuned agent.
+
 # Guidelines to contribute
 
 1. Fork this repo
@@ -27,7 +32,7 @@ vol. 12, no. 2, pp. 132-144, June 2020, doi: 10.1109/TG.2018.2884768**
    - `git push origin master`
 6. Now make a pull request
 
-# Understanding the code
+# Understanding the code structure
 
 ##### Entry point:
 
@@ -36,7 +41,7 @@ _main.py_ / _benchmark.py_
 ##### Other files:
 
 - **main.py:** Can be used for testing during development
-- **benchmark.py:** Used to benchmark win ratio of all the types of agents against the others in all available games
+- **benchmark.py:** Used to benchmark the agents
 - **game.py:** Exports a `Game` class that can be used to specify the agents that'll play the game and the game type. The game can be played by calling the `playGame()` method - used by _main.py_ and _benchmark.py_
 
 ## /agents
@@ -60,6 +65,8 @@ _agentsList.py_ and _Agent.py_
 
 Any one of the tuner (_nmc.py_ or _cmaes.py_)
 
+All tuners implement the methods defined in `TunerMeta`. These methods serve as an API to interact with any tuner.
+
 ##### Development Guidelines:
 
 All tuners should extend the `TunerMeta` base class
@@ -69,6 +76,8 @@ All tuners should extend the `TunerMeta` base class
 ##### Entry point:
 
 _gamesList.py_ and _games.py_
+
+All games implement the methods defined in `BoardMeta`. These methods serve as an API to interact with any game.
 
 ##### Development Guidelines:
 
@@ -85,3 +94,4 @@ All games should extend the `BoardMeta` base class
 
 - Ramvardhan R. (https://github.com/ram-the-coder)
 - Sathish Kumar E. (https://github.com/sathishk0230)
+- Sudharshan V. (https://github.com/Sudharshanv2000)
