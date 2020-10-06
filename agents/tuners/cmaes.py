@@ -40,31 +40,38 @@ class cmaEsParameterTuning(TunerMeta):
         self.fitness=[]
         self.current_index=0
         initmean=[random.random() for i in range(len(self.parameters))]
-        print("initmean",initmean)
+        # print("initmean",initmean)
         self.cmaes=cmaEs(parameters,initmean)
         self.penalty=100
         self.es=self.cmaes.es
         self.generatedPopulation=self.es.ask()
         self.populationSize=len(self.generatedPopulation)
         self.fitness=[0]*self.populationSize
+        self.stopped=False
         # print(self.generatedPopulation)
         
         
     def getParams(self):
         # selectedIndividual=None
         #### Current Generation
-        if self.current_index<self.populationSize:
-            selectedIndividual=self.generatedPopulation[self.current_index]
-            
+        if self.es.stop():
+            selectedIndividual=self.es.result.xbest
+            # print("xbest..........................")
+            # print(selectedIndividual)
+            self.stopped=True
         else:
-            #### New Generation
-            self.es.tell(self.generatedPopulation,self.fitness) #update fitness values to the distribution
-            self.generatedPopulation=self.es.ask() #generate new population
-            self.current_index=0
-            selectedIndividual=self.generatedPopulation[self.current_index]
-            self.populationSize=len(self.generatedPopulation)
-            self.fitness=[0]*self.populationSize
-            # selectedIndividual=self.es.result.xbest
+            if self.current_index<self.populationSize:
+                selectedIndividual=self.generatedPopulation[self.current_index]
+                
+            else:
+                #### New Generation
+                self.es.tell(self.generatedPopulation,self.fitness) #update fitness values to the distribution
+                self.generatedPopulation=self.es.ask() #generate new population
+                self.current_index=0
+                selectedIndividual=self.generatedPopulation[self.current_index]
+                self.populationSize=len(self.generatedPopulation)
+                self.fitness=[0]*self.populationSize
+                # selectedIndividual=self.es.result.xbest
 
 
         individual=[]
@@ -77,8 +84,9 @@ class cmaEsParameterTuning(TunerMeta):
         return tuple(individual)
         
     def updateStatistics(self,reward):
-        self.fitness[self.current_index]=100-reward+self.cmaes.repairIndividual(self.generatedPopulation[self.current_index])
-        self.current_index+=1
+        if not self.stopped:
+            self.fitness[self.current_index]=100-reward+self.cmaes.repairIndividual(self.generatedPopulation[self.current_index])
+            self.current_index+=1
         return
 
         
