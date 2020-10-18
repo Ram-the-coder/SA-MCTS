@@ -55,3 +55,6 @@ class Board(BoardMeta):
 
     def display(self, state):
         util.drawBoard(state.board)
+
+    def averageNumberOfMoves(self):
+        return 20

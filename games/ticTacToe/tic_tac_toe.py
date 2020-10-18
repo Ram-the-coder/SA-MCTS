@@ -86,3 +86,6 @@ class Board(BoardMeta):
 
     def isGameOver(self, state):
         return self.winner(state) != ONGOING
+
+    def averageNumberOfMoves(self):
+        return 3.5

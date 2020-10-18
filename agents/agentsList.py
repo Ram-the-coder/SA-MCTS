@@ -1,9 +1,9 @@
 mcts = 'mcts'
 nmc = 'nmc'
-# lsi = 'lsi'
+lsi = 'lsi'
 ea = 'ea'
 # ntbea = 'ntbea'
 cmaes = 'cma-es'
 # human = 'human'
 
-benchmarkList = [mcts, nmc, ea, cmaes]
+benchmarkList = [mcts, nmc, lsi, ea, cmaes]

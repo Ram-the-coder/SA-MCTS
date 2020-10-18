@@ -4,6 +4,7 @@ from agents.tuners.nmc import NMCParameterTuning
 from agents.tuners.ea import EAParameterTuning
 from agents.tuners.cmaes import cmaEsParameterTuning
 from agents.tuners.ea import EAParameterTuning 
+from agents.tuners.lsi import LSIParameterTuning 
 import datetime
 
 TIME_PER_MOVE = 1
@@ -11,11 +12,16 @@ TIME_PER_MOVE = 1
 class Agent:
     def __init__(self, agentType, agentParameters, board):
         self.agentType = agentType
+        self.agentParameters = agentParameters
         self.board = board
-        self.tuner = self.getTunerInstance(agentType, agentParameters)
-        self.mcts = MonteCarlo(self.board)    
-        self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in agentParameters])
 
+    def initGame(self):
+        self.tuner = self.getTunerInstance(self.agentType, self.agentParameters, self.board.averageNumberOfMoves())
+        self.mcts = MonteCarlo(self.board)    
+        self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters])
+
+        # self.moves = 0
+        # self.simulations = 0    
 
     def makeMove(self, gameState):
         if self.board.isGameOver(gameState):
@@ -34,6 +40,7 @@ class Agent:
             
             # Do 1 MCTS Simulation
             reward = self.mcts.simulate(gameState)
+            # self.simulations += 1
 
             # Update tuner statistics
             if self.tuner != None:
@@ -54,18 +61,23 @@ class Agent:
                 bestScore = score
                 bestChild = i
 
+        # self.moves += 1
         # Return next state
         return self.mcts.root.children[bestChild].state
 
-    def getTunerInstance(self, agentType, agentParameters):
+    def getTunerInstance(self, agentType, agentParameters, numMoves):
         if agentType == agentsList.nmc:
             return NMCParameterTuning(agentParameters)
         if agentType == agentsList.ea:
             return EAParameterTuning(agentParameters)
         if agentType == agentsList.cmaes:
             return cmaEsParameterTuning(agentParameters)
-        return None
+        if agentType == agentsList.lsi:
+            N = numMoves * 10000
+            ng = int(N * 0.75)
+            ne = N - ng
+            k = 20 if len(agentParameters) <= 2 else 600
+            # print(ng, ne, k)
+            return LSIParameterTuning(ng, ne, k, agentParameters)
 
-        
-        
-
+        return None  

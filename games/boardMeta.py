@@ -35,7 +35,7 @@ class BoardMeta:
     @abstractmethod
     def winner(self, state):
         pass
-    
+        
     # Returns true if game is over
     @abstractmethod
     def isGameOver(self, state):
@@ -45,6 +45,12 @@ class BoardMeta:
     # Use pass if it can't be displayed
     @abstractmethod
     def display(self, state):
+        pass
+
+    # Should return the avg number of moves in the game
+    # This is used by LSI
+    @abstractmethod
+    def averageNumberOfMoves(self):
         pass
         
 class BoardException(Exception): 

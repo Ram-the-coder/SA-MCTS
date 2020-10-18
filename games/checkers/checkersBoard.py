@@ -36,7 +36,8 @@ class Board(BoardMeta):
     def display(self, state):
         print(state)
 
-
+    def averageNumberOfMoves(self):
+        return 76
 
 
 
