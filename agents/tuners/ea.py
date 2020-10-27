@@ -34,8 +34,7 @@ class EA:
         for param in self.parameters:
             individual.append(choice(param['domain']))
         key = tuple(individual)
-        self.Genomes.append(key)
-        self.fitness.append(None)
+        return key
 
     def generateIndividual(self, best_M_Genes, p_cross):
 
@@ -64,7 +63,9 @@ class EAParameterTuning(TunerMeta):
         self.ea = EA(self.parameters)
         
         for _ in range(self.populationSize):
-            self.ea.generateRandomIndividual()
+            key = self.ea.generateRandomIndividual()
+            self.ea.Genomes.append(key)
+            self.ea.fitness.append(None)
 
     def getParams(self):
         selected_Genome = None
