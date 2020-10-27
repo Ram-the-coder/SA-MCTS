@@ -4,7 +4,8 @@ from agents.tuners.nmc import NMCParameterTuning
 from agents.tuners.ea import EAParameterTuning
 from agents.tuners.cmaes import cmaEsParameterTuning
 from agents.tuners.ea import EAParameterTuning 
-from agents.tuners.lsi import LSIParameterTuning 
+from agents.tuners.lsi import LSIParameterTuning
+from agents.tuners.ntbea import NTBEAParameterTuning 
 import datetime
 
 TIME_PER_MOVE = 1
@@ -79,5 +80,7 @@ class Agent:
             k = 20 if len(agentParameters) <= 2 else 600
             # print(ng, ne, k)
             return LSIParameterTuning(ng, ne, k, agentParameters)
+        if agentType == agentsList.ntbea:
+            return NTBEAParameterTuning(P=agentParameters)
 
         return None  
