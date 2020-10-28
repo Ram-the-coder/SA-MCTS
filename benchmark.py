@@ -73,6 +73,7 @@ def singleTunerBenchmark(HALF_NUMBER_OF_GAMES_PER_PAIR):
     print('1. Naive Monte Carlo (NMC)')
     print('2. Evolutionary Algorithm (EA)')
     print('3. Covariance Matrix Adaptation Evolution Strategy (CMA-ES)')
+    print('4. N-Tuple Bandit Evolutionary Algorithm (NTBEA)')
 
     choice = int(input())
     agent1 = agentsList.mcts
@@ -84,6 +85,8 @@ def singleTunerBenchmark(HALF_NUMBER_OF_GAMES_PER_PAIR):
         agent2 = agentsList.ea
     elif choice == 3:
         agent2 = agentsList.cmaes
+    elif choice == 4:
+        agent2 = agentsList.ntbea
 
     print('Chosen allocation strategy:', agent2)
      
