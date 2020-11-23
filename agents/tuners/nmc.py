@@ -70,7 +70,7 @@ class NMCParameterTuning(TunerMeta):
             paramComboExists = False
             for idx, paramCombo in enumerate(self.comboMAB.arms):
                 thisParamComboExists = True
-                for i in range(len(paramCombo)):
+                for i in range(len(paramCombo['armDetails'][0])):
                     if parameters[i]['value'] != paramCombo['armDetails'][0][i]['value']:
                         thisParamComboExists = False
                         break
