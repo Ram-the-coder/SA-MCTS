@@ -17,9 +17,10 @@ class Agent:
         self.board = board
 
     def initGame(self):
-        self.tuner = self.getTunerInstance(self.agentType, self.agentParameters, self.board.averageNumberOfMoves())
+        self.tuner = self.getTunerInstance(self.agentType, self.agentParameters['tuning'], self.board.averageNumberOfMoves())
         self.mcts = MonteCarlo(self.board)    
-        self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters])
+        self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters['constant']])
+        self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters['tuning']])
 
         # self.moves = 0
         # self.simulations = 0    
