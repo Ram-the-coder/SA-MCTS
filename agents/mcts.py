@@ -1,6 +1,6 @@
 from random import choice
 from random import random
-from math import log, sqrt
+from math import log, sqrt, isnan, inf
 
 X_PLAYER = 1
 O_PLAYER = 2
@@ -25,7 +25,7 @@ class MonteCarlo:
         self.params = {}
         self.lookup={}
         self.AmafTable={}
-        self.f=open("output.txt","w")
+        # self.f=open("output.txt","w")
 
 
     def setRootNodeState(self, state):
@@ -77,7 +77,7 @@ class MonteCarlo:
         total=max(sum(child.plays for child in node.children), 1)
         log_total = log(total)
         K=self.params['K']
-        Beta=sqrt(K/(3*total+K))
+        Beta=1 if K == inf else sqrt(K/(3*total+K))
         Ref=self.params['Ref']
         temp=node
         ancestor=node #closest ancestor that has atleast ref visits
@@ -108,7 +108,8 @@ class MonteCarlo:
             score+=Beta*self.AmafTable[ancestor][node.move] if ancestor in self.AmafTable else 0
             if bestScore - self.params['VO'] <= score:
                 goodChildren.append(child)
-        self.f.write(str(len(goodChildren))+'\n')
+
+        # self.f.write(str(len(goodChildren))+'\n')
         selectedChild = choice(goodChildren)
 
         if selectedChild == None:
