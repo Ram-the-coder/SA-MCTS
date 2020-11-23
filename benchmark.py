@@ -53,16 +53,16 @@ def getParameters():
         return ap_online_4params, ap_offline_params
     if choice == 4:
         return ap_online_6params, ap_offline_params
-    else
+    else:
         print('invalid agent choice')
 
 def benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, agent1params, agent2params):
     for game in games:
         print('----------------------------------------\nGame:', game)
         for i in range(len(agents)):
-            agent1 = agentsList.mcts
-            agent2 = agents[i]
-            if agent2 == agentsList.mcts:
+            agent1 = agents[i]
+            agent2 = agentsList.mcts
+            if agent1 == agentsList.mcts:
                 continue
             wins1 = 0
             wins2 = 0
@@ -101,19 +101,19 @@ def singleTunerBenchmark(HALF_NUMBER_OF_GAMES_PER_PAIR):
     print('5. Covariance Matrix Adaptation Evolution Strategy (CMA-ES)')
 
     choice = int(input())
-    agent1 = agentsList.mcts
-    agent2 = agentsList.nmc
+    agent1 = agentsList.nmc
+    agent2 = agentsList.mcts
 
     if choice == 1:
-        agent2 = agentsList.nmc
+        agent1 = agentsList.nmc
     elif choice == 2:
-        agent2 = agentsList.ea
+        agent1 = agentsList.ea
     elif choice == 3:
-        agent2 = agentsList.cmaes
+        agent1 = agentsList.cmaes
     elif choice == 4:
-        agent2 = agentsList.ntbea
+        agent1 = agentsList.ntbea
 
-    print('Chosen allocation strategy:', agent2)
+    print('Chosen allocation strategy:', agent1)
 
     agent1params, agent2params = getParameters()
      
@@ -154,13 +154,13 @@ def benchmarkAll(HALF_NUMBER_OF_GAMES_PER_PAIR):
     print('Benchmarking SP Agent')
     benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, sp_online_params, sp_offline_params)
     
-    print('Benchmarking AP Agent tuning 2 parameters')
+    print('\n\nBenchmarking AP Agent tuning 2 parameters')
     benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, ap_online_2params, ap_offline_params)
 
-    print('Benchmarking AP Agent tuning 4 parameters')
+    print('\n\nBenchmarking AP Agent tuning 4 parameters')
     benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, ap_online_4params, ap_offline_params)
 
-    print('Benchmarking AP Agent tuning 6 parameters')
+    print('\n\nBenchmarking AP Agent tuning 6 parameters')
     benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, ap_online_6params, ap_offline_params)
 
 #################### Main Method ####################
@@ -177,7 +177,7 @@ def main():
     
     if choice == 1:
         benchmarkAll(HALF_NUMBER_OF_GAMES_PER_PAIR)
-    if choice == 2:
+    elif choice == 2:
         agent1params, agent2params = getParameters()
         benchmarkAgent(HALF_NUMBER_OF_GAMES_PER_PAIR, agent1params, agent2params)
     else:

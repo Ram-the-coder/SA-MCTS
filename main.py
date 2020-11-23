@@ -9,7 +9,17 @@ parameters = {
     'tuning': [params.C, params.eps, params.VO]
 }
 
-tictactoeGame = Game(agentsList.lsi, parameters, agentsList.mcts, parameters, gamesList.ticTacToe)
+sp_online_params = {
+    'tuning': [params.C, params.eps],
+    'constant': [params.K_UCT, params.Ref, params.VO, params.T]
+}
+
+sp_offline_params = {
+    'tuning': [],
+    'constant': [params.C, params.eps, params.K_UCT, params.Ref, params.VO, params.T]
+}
+
+tictactoeGame = Game(agentsList.lsi, sp_online_params, agentsList.mcts, sp_offline_params, gamesList.ticTacToe)
 winner = tictactoeGame.playGame()
 print('winner: Agent', winner)
 
