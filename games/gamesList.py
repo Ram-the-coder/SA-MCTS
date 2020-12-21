@@ -1,4 +1,4 @@
-ticTacToe = 'tic tac toe'
+ticTacToe = 'tic-tac-toe'
 checkers = 'checkers'
 reversi = 'reversi'
 

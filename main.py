@@ -3,6 +3,7 @@ from agents import agentsList
 from games import gamesList
 from games import games
 import params
+import sys
 
 parameters = {
     'constant': [params.K_GRAVE, params.Ref, params.T],
@@ -19,8 +20,17 @@ sp_offline_params = {
     'constant': [params.C, params.eps, params.K_UCT, params.Ref, params.VO, params.T]
 }
 
-tictactoeGame = Game(agentsList.lsi, sp_online_params, agentsList.mcts, sp_offline_params, gamesList.ticTacToe)
-winner = tictactoeGame.playGame()
+kwargs = dict()
+for kwarg in sys.argv[1:]:
+    k , v = kwarg.split("=")
+    kwargs[k]=v
+
+agent1 = kwargs.get('agent1','lsi')
+agent2 = kwargs.get('agent2','mcts')
+game = kwargs.get('game','tic-tac-toe')
+
+gameplay = Game(agent1, parameters, agent2, parameters, game)
+winner = gameplay.playGame()
 print('winner: Agent', winner)
 
 # checkers = Game(agentsList.ea, parameters, agentsList.mcts, parameters, gamesList.checkers)
