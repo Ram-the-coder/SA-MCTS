@@ -75,15 +75,9 @@ class LModel:
 class NTBEAParameterTuning(TunerMeta):
 
     def __init__(self, **kwargs):
-        # P = [
-        #        {'name':'c' ,
-        #         'domain': [1, 2, 3]},
-        #        {'name':'lambda',
-        #         'domain': [4, 5, 6]}
-        # ]
-        self.x = kwargs.get('x', 1)
+        self.x = kwargs.get('x', 5)
         self.P = kwargs.get('P', list())
-        self.L = kwargs.get('L', list(range(len(self.P))))
+        self.L = kwargs.get('L', [1, len(self.P)])
         self.c = kwargs.get('c', 1)
         self.LModel = LModel(
             L=self.L,

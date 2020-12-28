@@ -1,17 +1,14 @@
 from agents.Agent import Agent
 from games import games
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class Game:
-    def __init__(self, agent1, agent1parameters, agent2, agent2parameters, game, displayPrefix = None):
+    def __init__(self, agent1, agent1parameters, agent2, agent2parameters, game, displayPrefix = None, debug=False):
         self.board = games.getBoard(game)
-        self.agent1 = Agent(agent1, agent1parameters, self.board)
-        self.agent2 = Agent(agent2, agent2parameters, self.board)
+        self.agent1 = Agent(agent1, agent1parameters, self.board, debug)
+        self.agent2 = Agent(agent2, agent2parameters, self.board, debug)
         self.displayPrefix = displayPrefix
-
-        # self.avgMoves = [0, 0]
-        # self.avgSimulations = [0, 0]
-        # self.n = 1
-        # self.avgCnt = [0, 0, 0]
 
     # Return 1 if agent1 won
     # Return 0 if draw
@@ -41,15 +38,4 @@ class Game:
         if self.board.winner(gameState) == -1:
             return 0
         
-        # self.updateStats()
         return -1 if agent1Turn else 1
-
-    # def updateStats(self):
-    #     self.avgMoves[0] += (self.agent1.moves - self.avgMoves[0])/self.n
-    #     self.avgSimulations[0] += (self.agent1.simulations - self.avgSimulations[0])/self.n
-    #     self.avgMoves[1] += (self.agent2.moves - self.avgMoves[1])/self.n
-    #     self.avgSimulations[1] += (self.agent2.simulations - self.avgSimulations[1])/self.n
-    #     self.avgCnt[0] += (self.agent1.tuner.gen - self.avgCnt[0])/self.n
-    #     self.avgCnt[1] += (self.agent1.tuner.eval - self.avgCnt[1])/self.n
-    #     self.avgCnt[2] += (self.agent1.tuner.exp - self.avgCnt[2])/self.n
-    #     self.n += 1

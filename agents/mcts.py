@@ -45,11 +45,10 @@ class MonteCarlo:
 
         # Simulation
         player = self.board.current_player(self.root.state)
-        opponent = O_PLAYER if player == X_PLAYER else O_PLAYER
+        opponent = O_PLAYER if player == X_PLAYER else X_PLAYER
         reward = 0
         # if not leaf.isTerminal:
         reward, terminalDepth,move = self.playout(leaf, player)
-        # print(self.lookup)
 
         # Backpropagation
         for node in path:

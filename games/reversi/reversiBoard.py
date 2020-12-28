@@ -23,9 +23,9 @@ class BoardState:
             self.gameOver = True
             scores = util.getScoreOfBoard(self.board)
             if scores[PLAYER_1] > scores[PLAYER_2]:
-                self.winner = PLAYER_1
+                self.winner = 1
             elif scores[PLAYER_1] < scores[PLAYER_2]:
-                self.winner = PLAYER_2
+                self.winner = 2
             else: 
                 self.winner = TIE
 

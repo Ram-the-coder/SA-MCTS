@@ -11,19 +11,17 @@ import datetime
 TIME_PER_MOVE = 1
 
 class Agent:
-    def __init__(self, agentType, agentParameters, board):
+    def __init__(self, agentType, agentParameters, board, debug):
         self.agentType = agentType
         self.agentParameters = agentParameters
         self.board = board
+        self.debug = debug
 
     def initGame(self):
         self.tuner = self.getTunerInstance(self.agentType, self.agentParameters['tuning'], self.board.averageNumberOfMoves())
         self.mcts = MonteCarlo(self.board)    
         self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters['constant']])
         self.mcts.setParams([{'name': param['name'], 'value': param['default']} for param in self.agentParameters['tuning']])
-
-        # self.moves = 0
-        # self.simulations = 0    
 
     def makeMove(self, gameState):
         if self.board.isGameOver(gameState):
@@ -39,19 +37,22 @@ class Agent:
                 params = self.tuner.getParams()
                 if params and len(params) != 0:
                     self.mcts.setParams(params)
+                    if self.debug:
+                        print('Chosen params:', params)
             
             # Do 1 MCTS Simulation
             reward = self.mcts.simulate(gameState)
-            # self.simulations += 1
 
             # Update tuner statistics
             if self.tuner != None:
                 self.tuner.updateStatistics(reward)
 
         # Print Stats
-        # for x in sorted(((100 * child.wins/(child.plays+1), child.wins, child.plays, child.move) for child in self.mcts.root.children), reverse = True):
-        #     print('{3} - {0}% - {1}/{2}'.format(*x))
-
+        if self.debug:
+            print('\nMove - Expected win percentage found by MCTS simulation')
+            for x in sorted(((100 * child.wins/(child.plays+1), child.wins, child.plays, str(child.move)) for child in self.mcts.root.children), reverse = True):
+                print('{3} - {0}% - {1}/{2}'.format(*x))
+            print()
         # Get best move
         bestChild = 0
         bestScore = self.mcts.root.children[0].wins/(self.mcts.root.children[0].plays+1)
@@ -63,7 +64,6 @@ class Agent:
                 bestScore = score
                 bestChild = i
 
-        # self.moves += 1
         # Return next state
         return self.mcts.root.children[bestChild].state
 
